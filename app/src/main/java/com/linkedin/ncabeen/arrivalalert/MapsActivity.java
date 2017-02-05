@@ -1,6 +1,8 @@
 package com.linkedin.ncabeen.arrivalalert;
 
+import android.content.Context;
 import android.location.Location;
+import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -30,6 +32,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     GoogleMap mGoogleMap;
     SupportMapFragment mFragment;
     Marker currLocationMarker;
+    MarkerOptions destination;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +66,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         */
         mGoogleMap = googleMap;
         mGoogleMap.setMyLocationEnabled(true);
+        destination = new MarkerOptions();
+        destination.title("Destination");
 
         buildGoogleApiClient();
 
         mGoogleApiClient.connect();
+
+        mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+
+            @Override
+            public void onMapClick(LatLng point) {
+                mGoogleMap.clear();
+                destination.position(point);
+                mGoogleMap.addMarker(destination);
+            }
+        });
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -140,13 +156,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //zoom to current position:
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(latLng).zoom(14).build();
+                .target(latLng).zoom(15).build();
 
+        if( destination.getPosition() != null) {
+
+            float[] distance = new float[1];
+            Location.distanceBetween(latLng.latitude, latLng.longitude, destination.getPosition().latitude, destination.getPosition().longitude, distance);
+
+            if (distance[0] < 200) {
+                vibrate();
+            }
+        }
         mGoogleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
         //If you only need one location, unregister the listener
         //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
 
+    }
+
+    public boolean vibrate() {
+        // Get instance of Vibrator from current Context
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        // Start without a delay
+        // Each element then alternates between vibrate, sleep, vibrate, sleep...
+        long[] pattern = {0, 100, 1000, 300, 200, 100, 500, 200, 100};
+
+        // The '-1' here means to vibrate once, as '-1' is out of bounds in the pattern array
+        //v.vibrate(pattern, -1);
+        v.vibrate(1000);
+        return true;
     }
 }
