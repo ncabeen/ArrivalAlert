@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.linkedin.ncabeen.arrivalalert.MainActivity">
+    tools:context="com.linkedin.ncabeen.arrivalalert.FakeMap">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -21,22 +21,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_input_add" />
-
-    <Button
-        android:text="Vibrate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/vibrate_button"
-        app:layout_anchorGravity="center_vertical|center_horizontal"
-        android:layout_gravity="center_vertical|center_horizontal" />
-
-    <include layout="@layout/content_main" />
+    <include layout="@layout/content_fake_map" />
 
 </android.support.design.widget.CoordinatorLayout>
