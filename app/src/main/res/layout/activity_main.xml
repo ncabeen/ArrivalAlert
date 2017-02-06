@@ -29,14 +29,8 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_input_add" />
 
-    <Button
-        android:text="Vibrate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/vibrate_button"
-        app:layout_anchorGravity="center_vertical|center_horizontal"
-        android:layout_gravity="center_vertical|center_horizontal" />
+    <include layout="@layout/content_main"
+        android:id="@+id/include" />
 
-    <include layout="@layout/content_main" />
 
 </android.support.design.widget.CoordinatorLayout>

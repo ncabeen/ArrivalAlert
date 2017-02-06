@@ -42,6 +42,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        //TODO: show "up" navigation in top bar
     }
 
 
@@ -75,7 +76,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-
             @Override
             public void onMapClick(LatLng point) {
                 mGoogleMap.clear();
@@ -86,7 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     protected synchronized void buildGoogleApiClient() {
-        Toast.makeText(this,"buildGoogleApiClient",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this,"buildGoogleApiClient",Toast.LENGTH_SHORT).show();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -176,6 +176,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public boolean vibrate() {
+        //TODO: revert behavior
+        Toast.makeText(this,"Arriving at destination", Toast.LENGTH_SHORT).show();
+
+        /*
         // Get instance of Vibrator from current Context
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -186,6 +190,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // The '-1' here means to vibrate once, as '-1' is out of bounds in the pattern array
         //v.vibrate(pattern, -1);
         v.vibrate(1000);
+        */
         return true;
     }
 }

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -27,12 +28,16 @@ public class MainActivity extends AppCompatActivity {
      */
     private GoogleApiClient client;
 
+    EditText mEdit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mEdit = (EditText)findViewById(R.id.editText);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -41,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 //        .setAction("Action", null).show();
                 Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                intent.putExtra("string", mEdit.getText().toString());
                 startActivity(intent);
 
             }
