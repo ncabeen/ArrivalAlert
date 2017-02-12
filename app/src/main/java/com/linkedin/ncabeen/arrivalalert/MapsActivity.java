@@ -163,12 +163,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             float[] distance = new float[1];
             Location.distanceBetween(latLng.latitude, latLng.longitude, destination.getPosition().latitude, destination.getPosition().longitude, distance);
 
-            if (distance[0] < 200) {
+            if (distance[0] < 400) {
                 vibrate();
             }
         }
-        mGoogleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
+        //TODO: uncomment
+        //mGoogleMap.animateCamera(CameraUpdateFactory
+        //        .newCameraPosition(cameraPosition));
 
         //If you only need one location, unregister the listener
         //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
@@ -177,9 +178,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public boolean vibrate() {
         //TODO: revert behavior
-        Toast.makeText(this,"Arriving at destination", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this,"Arriving at destination", Toast.LENGTH_SHORT).show();
 
-        /*
+
         // Get instance of Vibrator from current Context
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -188,9 +189,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         long[] pattern = {0, 100, 1000, 300, 200, 100, 500, 200, 100};
 
         // The '-1' here means to vibrate once, as '-1' is out of bounds in the pattern array
-        //v.vibrate(pattern, -1);
+        v.vibrate(pattern, -1);
         v.vibrate(1000);
-        */
+
         return true;
     }
 }
