@@ -1,6 +1,7 @@
 package com.linkedin.ncabeen.arrivalalert;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
@@ -43,6 +44,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         //TODO: show "up" navigation in top bar
+
+        startService(new Intent(this, LocationService.class));
+
     }
 
 
@@ -70,9 +74,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         destination = new MarkerOptions();
         destination.title("Destination");
 
-        buildGoogleApiClient();
+        //buildGoogleApiClient();
 
-        mGoogleApiClient.connect();
+        //mGoogleApiClient.connect();
 
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
@@ -97,8 +101,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnected(Bundle bundle) {
         Toast.makeText(this,"onConnected",Toast.LENGTH_SHORT).show();
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+        //Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+        //        mGoogleApiClient);
         /*
         if (mLastLocation != null) {
             //place marker at current position
@@ -112,14 +116,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         */
         mGoogleMap.clear();
-        mLocationRequest = new LocationRequest();
+        /*mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5000); //5 seconds
         mLocationRequest.setFastestInterval(3000); //3 seconds
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationRequest.setSmallestDisplacement(1F); //1 meter
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-
+*/
 
 
     }

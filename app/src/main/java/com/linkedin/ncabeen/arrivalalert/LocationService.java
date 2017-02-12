@@ -14,6 +14,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 //TODO: update this based on the comments here - http://stackoverflow.com/questions/29712244/using-googleapiclient-in-a-service
+//old school way to do this: http://stackoverflow.com/questions/33022662/android-locationmanager-vs-google-play-services
 public class LocationService extends Service implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -22,6 +23,15 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
     private Location mCurrentLocation;
     LocationRequest mLocationRequest;
 
+    public void onCreate(){
+        super.onCreate();
+        Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
+    }
+    public void onDestroy(){
+        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        mLocationClient.disconnect();
+        super.onDestroy();
+    }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "Service: onStartCommand", Toast.LENGTH_SHORT).show();
@@ -53,7 +63,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         // TODO Auto-generated method stub
         Toast.makeText(this, "Service: location changed", Toast.LENGTH_SHORT).show();
         mCurrentLocation = location;
-        Toast.makeText(this, mCurrentLocation.getLatitude() +", "+ mCurrentLocation.getLatitude(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, mCurrentLocation.getLatitude() +", "+ mCurrentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -78,8 +88,6 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         Toast.makeText(this, "Service: Disconnected. Please re-connect.",
                 Toast.LENGTH_SHORT).show();
     }
-
-
 
     @Override
     public IBinder onBind(Intent intent) {

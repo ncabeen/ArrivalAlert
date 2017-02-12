@@ -52,13 +52,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button button = (Button) findViewById(R.id.vibrate_button);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button startButton = (Button) findViewById(R.id.start_button);
+        startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Do something in response to button click
-                vibrate();
+                startService(new Intent(MainActivity.this, LocationService.class));
             }
         });
+
+        Button stopButton = (Button) findViewById(R.id.stop_button);
+        stopButton .setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Do something in response to button click
+                stopService(new Intent(MainActivity.this, LocationService.class));
+            }
+        });
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
