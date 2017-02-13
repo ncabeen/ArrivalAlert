@@ -6,6 +6,8 @@ import android.location.Location;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -85,8 +87,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mGoogleMap.clear();
                 destination.position(point);
                 mGoogleMap.addMarker(destination);
+                sendMessage();
             }
         });
+    }
+
+    // Send an Intent with an action named "custom-event-name". The Intent sent should
+    // be received by the ReceiverActivity.
+    private void sendMessage() {
+        Log.d("sender", "Broadcasting message");
+        Intent intent = new Intent("custom-event-name");
+        // You can also include some extra data.
+        double[] destinationArray = {getDestination().latitude,getDestination().longitude};
+        intent.putExtra("destination", destinationArray);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    public LatLng getDestination() {
+        return destination.getPosition();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -140,6 +158,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
+        //zoom to current position:
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(latLng).zoom(15).build();
 
         //place marker at current position
         //mGoogleMap.clear();
@@ -147,20 +168,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (currLocationMarker != null) {
             currLocationMarker.remove();
         }
-        */
+
         latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        /*
+
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
         currLocationMarker = mGoogleMap.addMarker(markerOptions);
-        */
+
         Toast.makeText(this,"Location Changed", Toast.LENGTH_SHORT).show();
 
-        //zoom to current position:
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(latLng).zoom(15).build();
+
 
         if( destination.getPosition() != null) {
 
@@ -171,6 +190,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 vibrate();
             }
         }
+        */
         //TODO: uncomment
         //mGoogleMap.animateCamera(CameraUpdateFactory
         //        .newCameraPosition(cameraPosition));
@@ -178,24 +198,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //If you only need one location, unregister the listener
         //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
 
-    }
-
-    public boolean vibrate() {
-        //TODO: revert behavior
-        //Toast.makeText(this,"Arriving at destination", Toast.LENGTH_SHORT).show();
-
-
-        // Get instance of Vibrator from current Context
-        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
-        // Start without a delay
-        // Each element then alternates between vibrate, sleep, vibrate, sleep...
-        long[] pattern = {0, 100, 1000, 300, 200, 100, 500, 200, 100};
-
-        // The '-1' here means to vibrate once, as '-1' is out of bounds in the pattern array
-        v.vibrate(pattern, -1);
-        v.vibrate(1000);
-
-        return true;
     }
 }
