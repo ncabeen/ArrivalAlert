@@ -2,6 +2,7 @@ package com.linkedin.ncabeen.arrivalalert;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -28,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private GoogleApiClient client;
 
+    public static final String PREFS_NAME = "MyPrefsFile";
+
     EditText mEdit;
 
     @Override
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mEdit = (EditText)findViewById(R.id.editText);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

@@ -2,6 +2,7 @@ package com.linkedin.ncabeen.arrivalalert;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
@@ -15,6 +16,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,12 +28,15 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import static com.linkedin.ncabeen.arrivalalert.MainActivity.PREFS_NAME;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     LocationRequest mLocationRequest;
     GoogleApiClient mGoogleApiClient;
 
-    LatLng latLng;
+    LatLng currLatLng;
+    //LatLng destLatLng;
     GoogleMap mGoogleMap;
     SupportMapFragment mFragment;
     Marker currLocationMarker;
@@ -46,6 +51,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         //TODO: show "up" navigation in top bar
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        destination = new MarkerOptions().position(new LatLng(settings.getFloat("destLat",0),settings.getFloat("destLng",0)));
+        Log.d("MapsActivity", "SharedPrefs destination (onCreate): " + getDestination().toString());
 
         startService(new Intent(this, LocationService.class));
 
@@ -73,12 +82,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         */
         mGoogleMap = googleMap;
         mGoogleMap.setMyLocationEnabled(true);
-        destination = new MarkerOptions();
+
+
+        buildGoogleApiClient();
+
+        mGoogleApiClient.connect();
+
         destination.title("Destination");
+        if(getDestination().latitude != 0 && getDestination().longitude != 0){
+            Log.d("MapsActivity", "destination (onMapReady): " + getDestination().toString());
+            //show the destination if it was already defined.
+            mGoogleMap.addMarker(destination);
+        } else {
+            //destination = new MarkerOptions();
+            Log.d("MapsActivity", "SharedPrefs was null");
+        }
 
-        //buildGoogleApiClient();
-
-        //mGoogleApiClient.connect();
 
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
@@ -88,6 +107,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 destination.position(point);
                 mGoogleMap.addMarker(destination);
                 sendMessage();
+                saveDestination();
             }
         });
     }
@@ -119,31 +139,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnected(Bundle bundle) {
         Toast.makeText(this,"onConnected",Toast.LENGTH_SHORT).show();
-        //Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-        //        mGoogleApiClient);
-        /*
-        if (mLastLocation != null) {
-            //place marker at current position
-            //mGoogleMap.clear();
-            latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            markerOptions.title("Current Position");
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-            currLocationMarker = mGoogleMap.addMarker(markerOptions);
-        }
-        */
-        mGoogleMap.clear();
-        /*mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000); //5 seconds
-        mLocationRequest.setFastestInterval(3000); //3 seconds
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000); //5 seconds
+        mLocationRequest.setFastestInterval(1000); //3 seconds
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         mLocationRequest.setSmallestDisplacement(1F); //1 meter
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-*/
-
-
     }
 
     @Override
@@ -159,44 +163,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
         //zoom to current position:
+        currLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(latLng).zoom(15).build();
+                .target(currLatLng).zoom(15).build();
 
-        //place marker at current position
-        //mGoogleMap.clear();
-        /*
-        if (currLocationMarker != null) {
-            currLocationMarker.remove();
-        }
-
-        latLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-        currLocationMarker = mGoogleMap.addMarker(markerOptions);
-
-        Toast.makeText(this,"Location Changed", Toast.LENGTH_SHORT).show();
-
-
-
-        if( destination.getPosition() != null) {
-
-            float[] distance = new float[1];
-            Location.distanceBetween(latLng.latitude, latLng.longitude, destination.getPosition().latitude, destination.getPosition().longitude, distance);
-
-            if (distance[0] < 400) {
-                vibrate();
-            }
-        }
-        */
-        //TODO: uncomment
-        //mGoogleMap.animateCamera(CameraUpdateFactory
-        //        .newCameraPosition(cameraPosition));
+        mGoogleMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
 
         //If you only need one location, unregister the listener
-        //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
 
+    }
+
+    private boolean saveDestination() {
+        boolean success = false;
+
+        // We need an Editor object to make preference changes.
+        // All objects are from android.context.Context
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putFloat("destLat", (float) getDestination().latitude);
+        editor.putFloat("destLng", (float) getDestination().longitude);
+
+        // Commit the edits!
+        success = editor.commit();
+
+        Log.d("MapsActivity", "Saving destination: " + getDestination().toString());
+
+        return success;
+    }
+
+    protected void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
     }
 }

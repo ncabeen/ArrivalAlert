@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,6 +20,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+
+import static com.linkedin.ncabeen.arrivalalert.MainActivity.PREFS_NAME;
 
 //TODO: update this based on the comments here - http://stackoverflow.com/questions/29712244/using-googleapiclient-in-a-service
 //old school way to do this: http://stackoverflow.com/questions/33022662/android-locationmanager-vs-google-play-services
@@ -70,8 +73,13 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 
         mLocationClient.connect();
 
-        double[] destionationArray = intent.getDoubleArrayExtra("destination");
-        mDestination = new LatLng(destionationArray[0],destionationArray[1]);
+        //TODO: restore this in the case that the service is started by map activity?
+        //double[] destionationArray = intent.getDoubleArrayExtra("destination");
+        //mDestination = new LatLng(destionationArray[0],destionationArray[1]);
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        mDestination = new LatLng(settings.getFloat("destLat",0),settings.getFloat("destLng",0));
+        Log.d("LocationService", "SharedPrefs destination: " + mDestination.toString());
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(5000); //5 seconds
